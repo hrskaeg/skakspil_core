@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_WIN32_EXECUTABLE OFF)
 
+# --- Python config (before pybind11) ---
+set(PYTHON_EXECUTABLE "C:/Python312/python.exe")
+
 # --- Build reusable library (core game logic) ---
 add_library(skakspil_lib
     src/board.cpp
@@ -19,6 +22,7 @@ add_library(skakspil_lib
     src/piece_rules/rules_king.cpp
     src/utils/perft.cpp
     src/utils/fen.cpp
+    src/encoding.cpp
 )
 
 target_include_directories(skakspil_lib PUBLIC ${PROJECT_SOURCE_DIR}/src/include)
@@ -27,7 +31,18 @@ target_include_directories(skakspil_lib PUBLIC ${PROJECT_SOURCE_DIR}/src/include
 add_executable(skakspil src/main.cpp)
 target_link_libraries(skakspil PRIVATE skakspil_lib)
 
+# --- pybind11 Python module ---
+include(FetchContent)
+FetchContent_Declare(
+    pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG        v2.12.0
+)
+FetchContent_MakeAvailable(pybind11)
 
+pybind11_add_module(skakspil_py src/python_bindings.cpp NO_EXTRAS)
+target_link_libraries(skakspil_py PRIVATE skakspil_lib)
+target_include_directories(skakspil_py PRIVATE ${PROJECT_SOURCE_DIR}/src/include)
 
 # --- CTest ---
 enable_testing()
