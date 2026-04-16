@@ -75,4 +75,10 @@ CMakeUserPresets.json
 
 build/
 
+*.pt
+*.pt.*
+__pycache__/
+*.pyc
+*.pyo
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,cmake
